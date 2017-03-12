@@ -12,29 +12,46 @@ const meow = require('meow')
 const pTry = require('p-try')
 
 const logDir = path.resolve(process.cwd(), 'log')
-const divider = `\n## Next\n`
+const nextSection = `\n## Next\n`
 
 function generateTemplate (heading, tasks) {
-  var md = `# ${heading}
+  var routines = ''
+  tasks = (typeof tasks === 'string') ? tasks : ''
 
-## Mission
-
-`
-
-  return pTry(() => getRoutineFile(cli.flags.routines))
-  .then(res => md + res + '\n')
+  // Get the routines if they exist
+  return pTry(() => getTasksFile(cli.flags.routines))
+  .then(res => {
+    routines = '\n' + res
+  })
   .catch(err => {
-    if (err.message === 'Path must be a string. Received undefined') {
-      return md
-    } else {
+    if (err.message !== 'Path must be a string. Received undefined') {
       throw new Error('Unable to read routine file', err)
     }
   })
-  .then(res => res + `## To Do
-${(typeof tasks === 'string') ? tasks : ''}
+  // Get the extra tasks if specified
+  .then(() => pTry(() => getTasksFile(cli.flags.tasksfile, '\n-----\n')))
+  .then(res => {
+    tasks = tasks + '\n' + res
+  })
+  .catch(err => {
+    if (err.message !== 'Path must be a string. Received undefined') {
+      throw new Error('Unable to read tasks file', err)
+    }
+  })
+  .then(() => {
+    // Mung it all together
+    var md =
+`# ${heading}
+
+## Mission
+${routines}
+## To Do
+${tasks}
 ## Roundup
-${divider}
-`)
+${nextSection}
+`
+    return md
+  })
 }
 
 function openFile (file) {
@@ -43,10 +60,11 @@ function openFile (file) {
   process.exit(0)
 }
 
-function getRoutineFile (filename) {
+function getTasksFile (filename, divider) {
   return pify(fs.readFile)(path.resolve(process.cwd(), filename), 'utf8').then(res => {
     // Note, comes from the top and not the bottom. Different functionality. Issue?
-    return res.split(divider)[0]
+    // Yes, definitely an issue
+    return (divider) ? res.split(divider)[0] : res
   })
 }
 
@@ -58,7 +76,7 @@ function getLastTasks () {
     return res[res.length - 1]
   }).then(res => {
     return pify(fs.readFile)(path.resolve(process.cwd(), `log/${res}`), 'utf8').then(res => {
-      return res.split(divider)[1]
+      return res.split(nextSection)[1]
     }).catch(err => {
       console.log('Unable to get previous tasks.')
       return err
@@ -78,7 +96,7 @@ function createTomorrow () {
   }).catch(err => {
     if (err.code === 'ENOENT') {
       return getLastTasks().then(res => {
-        generateTemplate(tomorrow, res)
+        return generateTemplate(tomorrow, res)
           .then(res => pify(writeFile)(tomorrowFile, res))
       })
     }
@@ -109,6 +127,7 @@ const cli = meow([`
     -y, --yesterday Grab yesterday's tasks
     -m, --tomorrow Make tomorrow's list
     -r, --routines Add a custom routines file
+    --tasksfile Add a custom taskfile to check to
 
   Examples
     $ options
