@@ -5,7 +5,7 @@
 ## Install
 
 ```sh
-npm i -g project-logg
+npm i -g ships-log
 ```
 
 ## Usage
@@ -18,6 +18,12 @@ log
 log --yesterday
 # Will print them to stdout
 ```
+
+### Options
+
+- `-r, --routines <filename>` Add in a routine file.
+- `-m, --tomorrow` Make tomorrow's file
+- `-y, --yesterday` Print yesterday's tasks which will be added to today
 
 ## Contribute
 

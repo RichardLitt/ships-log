@@ -9,25 +9,45 @@ const writeFile = require('write')
 const opn = require('opn')
 const fileExists = require('file-exists')
 const meow = require('meow')
+const pTry = require('p-try')
 
 const logDir = path.resolve(process.cwd(), 'log')
 const divider = `\n## Next\n`
 
-function template (heading, tasks) {
-  return `# ${heading}
+function generateTemplate (heading, tasks) {
+  var md = `# ${heading}
 
 ## Mission
 
-## To Do
+`
+
+  return pTry(() => getRoutineFile(cli.flags.routines))
+  .then(res => md + res + '\n')
+  .catch(err => {
+    if (err.message === 'Path must be a string. Received undefined') {
+      return md
+    } else {
+      throw new Error('Unable to read routine file', err)
+    }
+  })
+  .then(res => res + `## To Do
 ${(typeof tasks === 'string') ? tasks : ''}
 ## Roundup
-${divider}`
+${divider}
+`)
 }
 
 function openFile (file) {
   console.log('Opening file...')
   opn(file, {app: process.env.IDE})
   process.exit(0)
+}
+
+function getRoutineFile (filename) {
+  return pify(fs.readFile)(path.resolve(process.cwd(), filename), 'utf8').then(res => {
+    // Note, comes from the top and not the bottom. Different functionality. Issue?
+    return res.split(divider)[0]
+  })
 }
 
 function getLastTasks () {
@@ -44,6 +64,7 @@ function getLastTasks () {
       return err
     })
   }).catch(err => {
+    console.log(err.message, '- continuing...')
     return err
   })
 }
@@ -57,7 +78,8 @@ function createTomorrow () {
   }).catch(err => {
     if (err.code === 'ENOENT') {
       return getLastTasks().then(res => {
-        return pify(writeFile)(tomorrowFile, template(tomorrow, res))
+        generateTemplate(tomorrow, res)
+          .then(res => pify(writeFile)(tomorrowFile, res))
       })
     }
   }).then(res => openFile(tomorrowFile))
@@ -72,7 +94,8 @@ function createToday () {
   }).catch(err => {
     if (err.code === 'ENOENT') {
       return getLastTasks().then(res => {
-        return pify(writeFile)(todayFile, template(today, res))
+        return generateTemplate(today, res)
+          .then(res => pify(writeFile)(todayFile, res))
       })
     }
   }).then(res => openFile(todayFile))
@@ -85,6 +108,7 @@ const cli = meow([`
   Options
     -y, --yesterday Grab yesterday's tasks
     -m, --tomorrow Make tomorrow's list
+    -r, --routines Add a custom routines file
 
   Examples
     $ options
@@ -92,7 +116,8 @@ const cli = meow([`
 `], {
   'alias': {
     'y': 'yesterday',
-    'm': 'tomorrow'
+    'm': 'tomorrow',
+    'r': 'routines'
   }
 })
 
