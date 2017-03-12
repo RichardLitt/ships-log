@@ -1,0 +1,25 @@
+{
+  "name": "ships-log",
+  "version": "1.0.0",
+  "description": "Open up a log file for today in a project folder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "log": "index.js"
+  },
+  "keywords": [],
+  "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
+  "license": "MIT",
+  "dependencies": {
+    "file-exists": "^3.0.2",
+    "meow": "^3.7.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.17.1",
+    "open": "0.0.5",
+    "opn": "^4.0.2",
+    "pify": "^2.3.0",
+    "write": "^0.3.2"
+  }
+}
