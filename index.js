@@ -1,5 +1,3 @@
-#!bin/usr/env node
-
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
@@ -11,7 +9,7 @@ const fileExists = require('file-exists')
 const meow = require('meow')
 
 const today = moment().format('YYYY-MM-DD')
-const logDir = path.resolve(__dirname, 'log')
+const logDir = path.resolve(process.cwd(), 'log')
 const todayFile = `${logDir}/${today}.md`
 const divider = `\n## Next\n`
 
@@ -22,7 +20,7 @@ function getYesterday () {
     }
     return res[res.length - 1]
   }).then(res => {
-    return pify(fs.readFile)(path.resolve(__dirname, `log/${res}`), 'utf8').then(res => {
+    return pify(fs.readFile)(path.resolve(process.cwd(), `log/${res}`), 'utf8').then(res => {
       return res.split(divider)[1]
     }).catch(err => {
       console.log('Unable to get tasks from yesterday.')
