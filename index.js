@@ -1,15 +1,38 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
-const path = require('path')
-const moment = require('moment')
-const pify = require('pify')
-const mkdirp = pify(require('mkdirp'))
-const writeFile = require('write')
-const opn = require('opn')
-const fileExists = require('file-exists')
 const meow = require('meow')
+const moment = require('moment')
+const opn = require('opn')
+const path = require('path')
 const pTry = require('p-try')
+const pify = require('pify')
+const fileExists = pify(require('file-exists'))
+const mkdirp = pify(require('mkdirp'))
+const writeFile = pify(require('write'))
+
+const cli = meow([`
+  Usage
+    $ project
+
+  Options
+    -y, --yesterday Grab yesterday's tasks
+    -m, --tomorrow Make tomorrow's list
+    -r, --routines Add a custom routines file
+    --tasksfile Add a custom taskfile to check to
+    -p, --path Specify where the log folder exists
+
+  Examples
+    $ log
+    Opening file...
+`], {
+  'alias': {
+    'p': 'path',
+    'm': 'tomorrow',
+    'r': 'routines',
+    'y': 'yesterday'
+  }
+})
 
 const logDir = cli.flags.path ? cli.flags.path : path.resolve(process.cwd(), 'log')
 const nextSection = `\n## Next\n`
@@ -75,7 +98,7 @@ function getLastTasks () {
     }
     return res[res.length - 1]
   }).then(res => {
-    return pify(fs.readFile)(path.resolve(process.cwd(), `log/${res}`), 'utf8').then(res => {
+    return pify(fs.readFile)(path.resolve(logDir, res), 'utf8').then(res => {
       return res.split(nextSection)[1]
     }).catch(err => {
       console.log('Unable to get previous tasks.')
@@ -92,12 +115,12 @@ function createTomorrow () {
   const tomorrowFile = `${logDir}/${tomorrow}.md`
 
   return mkdirp(logDir).then((res) => {
-    return pify(fileExists)(tomorrowFile)
+    return fileExists(tomorrowFile)
   }).catch(err => {
     if (err.code === 'ENOENT') {
       return getLastTasks().then(res => {
         return generateTemplate(tomorrow, res)
-          .then(res => pify(writeFile)(tomorrowFile, res))
+          .then(res => writeFile(tomorrowFile, res))
       })
     }
   }).then(res => openFile(tomorrowFile))
@@ -108,37 +131,16 @@ function createToday () {
   const todayFile = `${logDir}/${today}.md`
 
   return mkdirp(logDir).then((res) => {
-    return pify(fileExists)(todayFile)
+    return fileExists(todayFile)
   }).catch(err => {
     if (err.code === 'ENOENT') {
       return getLastTasks().then(res => {
         return generateTemplate(today, res)
-          .then(res => pify(writeFile)(todayFile, res))
+          .then(res => writeFile(todayFile, res))
       })
     }
   }).then(res => openFile(todayFile))
 }
-
-const cli = meow([`
-  Usage
-    $ project
-
-  Options
-    -y, --yesterday Grab yesterday's tasks
-    -m, --tomorrow Make tomorrow's list
-    -r, --routines Add a custom routines file
-    --tasksfile Add a custom taskfile to check to
-
-  Examples
-    $ options
-    Opening file...
-`], {
-  'alias': {
-    'y': 'yesterday',
-    'm': 'tomorrow',
-    'r': 'routines'
-  }
-})
 
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
 if (cli.flags.yesterday) {
