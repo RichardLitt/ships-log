@@ -11,7 +11,7 @@ const fileExists = require('file-exists')
 const meow = require('meow')
 const pTry = require('p-try')
 
-const logDir = path.resolve(process.cwd(), 'log')
+const logDir = cli.flags.path ? cli.flags.path : path.resolve(process.cwd(), 'log')
 const nextSection = `\n## Next\n`
 
 function generateTemplate (heading, tasks) {
