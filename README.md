@@ -24,11 +24,12 @@ log --yesterday
 - `-r, --routines <filename>` Add in a routine file.
 - `-m, --tomorrow` Make tomorrow's file
 - `-y, --yesterday` Print yesterday's tasks which will be added to today
+- `-p, --path` Specify where the log file should exist
 
 ## Contribute
 
-This is mainly for me. Please open an issue if you want to contribute, first.
+This is mainly for me. Please open an issue if you want to contribute, first, as I am unlikely to merge if I disagree with a change.
 
 ## License
 
-MIT © 2017 Richard Littauer
+[MIT](LICENSE) © 2017 [Richard Littauer](https://burntfen.com)
