@@ -16,6 +16,7 @@ const cli = meow([`
     $ project
 
   Options
+    --help Display helptext
     -i, --init Initialize a project folder (with optional name)
     -m, --tomorrow Make tomorrow's list
     -p, --path Specify where the log folder exists
@@ -26,7 +27,25 @@ const cli = meow([`
 
   Examples
     $ log
-    Opening file...
+    # Will automatically open or create today's date file in log/
+
+    $ log --init
+    # Will create 'log/', 'README.md', and 'TODO.md' in the current folder.
+
+    $ log --init="project"
+    # Will create a folder named 'project' with the above files in it
+
+    $ log --yesterday
+    # Will open yesterday's log file
+
+    $ log --tomorrow
+    # Will generate tomorrow's file, with tasks from the last file's next section
+
+    $ log --routines=routines.md --tasksfile=todo.md --divider='--Stop Here--'
+    # Will create today's file, adding in routines and any tasks listed before the divider in the todo file
+
+    $ log --path=~/Desktop
+    # Will create a file on the Desktop for you
 `], {
   'alias': {
     'p': 'path',
