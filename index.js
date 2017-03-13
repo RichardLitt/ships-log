@@ -17,6 +17,7 @@ const cli = meow([`
 
   Options
     -y, --yesterday Grab yesterday's tasks
+    -i, --init Initialize a project folder (with optional name)
     -m, --tomorrow Make tomorrow's list
     -r, --routines Add a custom routines file
     --divider Send a customer divider for parsing additional task files
@@ -141,8 +142,34 @@ function openYesterday () {
   })
 }
 
+function initProject (projectName) {
+  projectName = (typeof projectName === 'string') ? projectName : logDir.split('/')[logDir.split('/').length - 2]
+  return mkdirp(logDir).then((res) => {
+    return fileExists(`${logDir}/README.md`)
+  }).catch(err => {
+    if (err.code === 'ENOENT') {
+      return writeFile('README.md', `# ${projectName}
+
+## Mission
+
+## Collaborators
+
+## Criteria for success
+
+## Tracking Location`)
+    }
+  }).then(() => fileExists(`${logDir}/TODO.md`)
+  ).catch(err => {
+    if (err.code === 'ENOENT') {
+      return writeFile('TODO.md', divider)
+    }
+  })
+}
+
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
-if (cli.flags.yesterday) {
+if (cli.flags.init) {
+  initProject(cli.flags.init)
+} else if (cli.flags.yesterday) {
   openYesterday()
 } else if (cli.flags.tomorrow) {
   createLogFile(moment().add(1, 'days').format('YYYY-MM-DD'))
