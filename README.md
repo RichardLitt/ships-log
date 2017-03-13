@@ -21,12 +21,13 @@ log --yesterday
 
 ### Options
 
-- `-r, --routines <filename>` Add in a routine file.
 - `-i, --init` Initialize a project folder (with optional name)
 - `-m, --tomorrow` Make tomorrow's file
-- `-y, --yesterday` Print yesterday's tasks which will be added to today
 - `-p, --path` Specify where the log file should exist
+- `-r, --routines <filename>` Add in a routine file.
+- `-y, --yesterday` Print yesterday's tasks which will be added to today
 - `--divider` Send a customer divider for parsing additional task files
+- `--tasksfile` Add a custom taskfile to check to
 
 ## Contribute
 

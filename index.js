@@ -16,13 +16,13 @@ const cli = meow([`
     $ project
 
   Options
-    -y, --yesterday Grab yesterday's tasks
     -i, --init Initialize a project folder (with optional name)
     -m, --tomorrow Make tomorrow's list
+    -p, --path Specify where the log folder exists
     -r, --routines Add a custom routines file
+    -y, --yesterday Grab yesterday's tasks
     --divider Send a customer divider for parsing additional task files
     --tasksfile Add a custom taskfile to check to
-    -p, --path Specify where the log folder exists
 
   Examples
     $ log
