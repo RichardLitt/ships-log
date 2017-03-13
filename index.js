@@ -110,49 +110,40 @@ function getLastTasks () {
   })
 }
 
-function createTomorrow () {
-  const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD')
-  const tomorrowFile = `${logDir}/${tomorrow}.md`
+function createLogFile (date) {
+  const file = `${logDir}/${date}.md`
 
   return mkdirp(logDir).then((res) => {
-    return fileExists(tomorrowFile)
+    return fileExists(file)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return getLastTasks().then(res => {
-        return generateTemplate(tomorrow, res)
-          .then(res => writeFile(tomorrowFile, res))
+      return getLastTasks().then(tasks => {
+        return generateTemplate(date, tasks)
+          .then(template => writeFile(file, template))
       })
     }
-  }).then(res => openFile(tomorrowFile))
+  }).then(res => openFile(file))
 }
 
-function createToday () {
-  const today = moment().format('YYYY-MM-DD')
-  const todayFile = `${logDir}/${today}.md`
-
+function openYesterday () {
+  const yesterdayFile = `${logDir}/${moment().subtract(1, 'dats').format('YYYY-MM-DD')}.md`
   return mkdirp(logDir).then((res) => {
-    return fileExists(todayFile)
+    return fileExists(yesterdayFile)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return getLastTasks().then(res => {
-        return generateTemplate(today, res)
-          .then(res => writeFile(todayFile, res))
-      })
+      console.log("I don't remember yesterday. Today, it rained.")
+    } else {
+      // Don't create it or open it if it doesn't exist
+      openFile(yesterdayFile)
     }
-  }).then(res => openFile(todayFile))
+  })
 }
 
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
 if (cli.flags.yesterday) {
-  getLastTasks().then(res => {
-    if (res.length === 0) {
-      console.log("I don't remember yesterday.")
-    } else {
-      console.log(res)
-    }
-  })
+  openYesterday()
 } else if (cli.flags.tomorrow) {
-  createTomorrow()
+  createLogFile(moment().add(1, 'days').format('YYYY-MM-DD'))
 } else {
-  createToday()
+  createLogFile(moment().format('YYYY-MM-DD'))
 }
