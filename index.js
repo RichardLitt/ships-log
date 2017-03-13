@@ -19,6 +19,7 @@ const cli = meow([`
     -y, --yesterday Grab yesterday's tasks
     -m, --tomorrow Make tomorrow's list
     -r, --routines Add a custom routines file
+    --divider Send a customer divider for parsing additional task files
     --tasksfile Add a custom taskfile to check to
     -p, --path Specify where the log folder exists
 
@@ -36,6 +37,7 @@ const cli = meow([`
 
 const logDir = cli.flags.path ? cli.flags.path : path.resolve(process.cwd(), 'log')
 const nextSection = `\n## Next\n`
+const divider = cli.flags.divider || '\n-----\n'
 
 function generateTemplate (heading, tasks) {
   var routines = ''
@@ -52,7 +54,7 @@ function generateTemplate (heading, tasks) {
     }
   })
   // Get the extra tasks if specified
-  .then(() => pTry(() => getTasksFile(cli.flags.tasksfile, '\n-----\n')))
+  .then(() => pTry(() => getTasksFile(cli.flags.tasksfile, divider)))
   .then(res => {
     tasks = tasks + '\n' + res
   })

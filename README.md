@@ -25,6 +25,7 @@ log --yesterday
 - `-m, --tomorrow` Make tomorrow's file
 - `-y, --yesterday` Print yesterday's tasks which will be added to today
 - `-p, --path` Specify where the log file should exist
+- `--divider` Send a customer divider for parsing additional task files
 
 ## Contribute
 
