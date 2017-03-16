@@ -55,7 +55,7 @@ const cli = meow([`
   }
 })
 
-const logDir = cli.flags.path ? cli.flags.path : path.resolve(process.cwd(), 'log')
+let logDir = (cli.flags.path) ? cli.flags.path : path.resolve(process.cwd(), 'log')
 const nextSection = `\n## Next\n`
 const divider = cli.flags.divider || '\n-----\n'
 
@@ -162,12 +162,18 @@ function openYesterday () {
 }
 
 function initProject (projectName) {
-  projectName = (typeof projectName === 'string') ? projectName : logDir.split('/')[logDir.split('/').length - 2]
+  const parentFolder = logDir.split('/')[logDir.split('/').length - 2]
+  projectName = (typeof projectName === 'string') ? projectName : parentFolder
+  // Create a dir for the project if it's not in one
+  if (typeof projectName === 'string' && projectName !== parentFolder) {
+    // Note: by default, path will point to the init, not to the log folder
+    logDir = path.resolve((cli.flags.path) ? cli.flags.path : process.cwd(), `${projectName}/log`)
+  }
   return mkdirp(logDir).then((res) => {
-    return fileExists(`${logDir}/README.md`)
+    return fileExists(`${logDir}/../README.md`)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return writeFile('README.md', `# ${projectName}
+      return writeFile(`${logDir}/../README.md`, `# ${projectName}
 
 ## Mission
 
@@ -177,10 +183,10 @@ function initProject (projectName) {
 
 ## Tracking Location`)
     }
-  }).then(() => fileExists(`${logDir}/TODO.md`)
+  }).then(() => fileExists(`${logDir}/../TODO.md`)
   ).catch(err => {
     if (err.code === 'ENOENT') {
-      return writeFile('TODO.md', divider)
+      return writeFile(`${logDir}/../TODO.md`, divider)
     }
   })
 }
