@@ -48,6 +48,8 @@ const cli = meow([`
     # Will create a file on the Desktop for you
 `], {
   'alias': {
+    'h': 'help',
+    'i': 'init',
     'p': 'path',
     'm': 'tomorrow',
     'r': 'routines',

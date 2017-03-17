@@ -35,7 +35,7 @@ log --path=~/Desktop
 
 ### Options
 
-- `--help` Display helptext
+- `-h, --help` Display helptext
 - `-i, --init` Initialize a project folder (with optional name)
 - `-m, --tomorrow` Make tomorrow's file
 - `-p, --path` Specify where the log file should exist
