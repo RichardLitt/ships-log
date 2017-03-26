@@ -150,16 +150,17 @@ function createLogFile (date) {
 }
 
 function openYesterday () {
-  const yesterdayFile = `${logDir}/${moment().subtract(1, 'dats').format('YYYY-MM-DD')}.md`
+  const yesterdayFile = `${logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
   return mkdirp(logDir).then((res) => {
     return fileExists(yesterdayFile)
-  }).catch(err => {
-    if (err.code === 'ENOENT') {
+  }).catch((err) => {
+    // Don't create it or open it if it doesn't exist
+    if (err) {
       console.log("I don't remember yesterday. Today, it rained.")
-    } else {
-      // Don't create it or open it if it doesn't exist
-      openFile(yesterdayFile)
+      process.exit(0)
     }
+  }).then((val) => {
+    openFile(yesterdayFile)
   })
 }
 
