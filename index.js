@@ -103,7 +103,7 @@ ${nextSection}
 
 function openFile (file) {
   console.log('Opening file...')
-  opn(file, {app: process.env.IDE})
+  opn(file, {app: process.env.IDE, wait: false})
   process.exit(0)
 }
 
