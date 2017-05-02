@@ -10,6 +10,7 @@ const pify = require('pify')
 const fileExists = pify(require('file-exists'))
 const mkdirp = pify(require('mkdirp'))
 const writeFile = pify(require('write'))
+const _ = require('lodash')
 
 const cli = meow([`
   Usage
@@ -21,7 +22,7 @@ const cli = meow([`
     -m, --tomorrow Make tomorrow's list
     -p, --path Specify where the log folder exists
     -r, --routines Add a custom routines file
-    -y, --yesterday Grab yesterday's tasks
+    -y, --yesterday Open yesterday's file
     --divider Send a customer divider for parsing additional task files
     --tasksfile Add a custom taskfile to check to
 
@@ -120,7 +121,8 @@ function getLastTasks () {
     if (res.length === 0) {
       throw new Error('No files in log directory')
     }
-    return res[res.length - 1]
+    // Filter to only get date files
+    return _.last(_.filter(res, (file) => file.match(/[\d-]*.md/)))
   }).then(res => {
     return pify(fs.readFile)(path.resolve(logDir, res), 'utf8').then(res => {
       return res.split(nextSection)[1]
