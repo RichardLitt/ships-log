@@ -1,6 +1,6 @@
 {
   "name": "ships-log",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
@@ -26,8 +26,8 @@
     "write": "^0.3.2"
   },
   "coordinates": [
-    52.5481151,
-    13.4136922
+    52.5173375,
+    13.4538411
   ],
   "devDependencies": {
     "assert": "^1.4.1",
