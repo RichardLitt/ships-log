@@ -109,7 +109,12 @@ function createLogFile (date, opts) {
           .then(template => writeFile(file, template))
       })
     }
-  }).then(res => openFile(file, opts))
+  }).then(res => {
+    if (opts.test) {
+      return
+    }
+    openFile(file, opts)
+  })
 }
 
 function openYesterday (opts) {

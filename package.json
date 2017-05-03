@@ -4,7 +4,8 @@
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard",
+    "test": "standard && mocha test.js"
   },
   "bin": {
     "log": "index.js"
@@ -27,5 +28,10 @@
   "coordinates": [
     52.5481151,
     13.4136922
-  ]
+  ],
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^3.3.0",
+    "standard": "^10.0.2"
+  }
 }
