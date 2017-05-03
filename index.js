@@ -24,6 +24,7 @@ const cli = meow([`
     -r, --routines Add a custom routines file
     -y, --yesterday Open yesterday's file
     --divider Send a customer divider for parsing additional task files
+      Default: '-----' on a new line
     --tasksfile Add a custom taskfile to check to
 
   Examples
