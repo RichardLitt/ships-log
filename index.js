@@ -46,7 +46,7 @@ function generateTemplate (heading, tasks, opts) {
   .then(() => {
     // Mung it all together
     var md =
-`# ${opts.heading}
+`# ${heading}
 
 ## Mission
 ${routines}
