@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const fs = require('fs')
 const moment = require('moment')
 const opn = require('opn')
