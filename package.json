@@ -8,7 +8,7 @@
     "test": "standard && mocha test.js"
   },
   "bin": {
-    "log": "index.js"
+    "log": "cli.js"
   },
   "keywords": [],
   "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
