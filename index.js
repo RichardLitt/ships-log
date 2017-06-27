@@ -1,7 +1,4 @@
-#!/usr/bin/env node
-
 const fs = require('fs')
-const meow = require('meow')
 const moment = require('moment')
 const opn = require('opn')
 const path = require('path')
@@ -10,63 +7,22 @@ const pify = require('pify')
 const fileExists = pify(require('file-exists'))
 const mkdirp = pify(require('mkdirp'))
 const writeFile = pify(require('write'))
+const _ = require('lodash')
 
-const cli = meow([`
-  Usage
-    $ project
+module.exports = {
+  getTasksFile,
+  getLastTasks,
+  createLogFile,
+  initProject,
+  openYesterday
+}
 
-  Options
-    --help Display helptext
-    -i, --init Initialize a project folder (with optional name)
-    -m, --tomorrow Make tomorrow's list
-    -p, --path Specify where the log folder exists
-    -r, --routines Add a custom routines file
-    -y, --yesterday Grab yesterday's tasks
-    --divider Send a customer divider for parsing additional task files
-    --tasksfile Add a custom taskfile to check to
-
-  Examples
-    $ log
-    # Will automatically open or create today's date file in log/
-
-    $ log --init
-    # Will create 'log/', 'README.md', and 'TODO.md' in the current folder.
-
-    $ log --init="project"
-    # Will create a folder named 'project' with the above files in it
-
-    $ log --yesterday
-    # Will open yesterday's log file
-
-    $ log --tomorrow
-    # Will generate tomorrow's file, with tasks from the last file's next section
-
-    $ log --routines=routines.md --tasksfile=todo.md --divider='--Stop Here--'
-    # Will create today's file, adding in routines and any tasks listed before the divider in the todo file
-
-    $ log --path=~/Desktop
-    # Will create a file on the Desktop for you
-`], {
-  'alias': {
-    'h': 'help',
-    'i': 'init',
-    'p': 'path',
-    'm': 'tomorrow',
-    'r': 'routines',
-    'y': 'yesterday'
-  }
-})
-
-let logDir = (cli.flags.path) ? cli.flags.path : path.resolve(process.cwd(), 'log')
-const nextSection = `\n## Next\n`
-const divider = cli.flags.divider || '\n-----\n'
-
-function generateTemplate (heading, tasks) {
+function generateTemplate (heading, tasks, opts) {
   var routines = ''
   tasks = (typeof tasks === 'string') ? tasks : ''
 
   // Get the routines if they exist
-  return pTry(() => getTasksFile(cli.flags.routines))
+  return pTry(() => getTasksFile(opts.routines, opts))
   .then(res => {
     routines = '\n' + res
   })
@@ -76,7 +32,7 @@ function generateTemplate (heading, tasks) {
     }
   })
   // Get the extra tasks if specified
-  .then(() => pTry(() => getTasksFile(cli.flags.tasksfile, divider)))
+  .then(() => pTry(() => getTasksFile(opts.tasksFile, opts)))
   .then(res => {
     tasks = tasks + '\n' + res
   })
@@ -95,35 +51,40 @@ ${routines}
 ## To Do
 ${tasks}
 ## Roundup
-${nextSection}
+${opts.nextSection}
 `
     return md
   })
 }
 
-function openFile (file) {
+function openFile (file, opts) {
   console.log('Opening file...')
-  opn(file, {app: process.env.IDE, wait: false})
+  opn(file, {app: opts.app, wait: false})
   process.exit(0)
 }
 
-function getTasksFile (filename, divider) {
+function getTasksFile (filename, opts) {
   return pify(fs.readFile)(path.resolve(process.cwd(), filename), 'utf8').then(res => {
     // Note, comes from the top and not the bottom. Different functionality. Issue?
     // Yes, definitely an issue
-    return (divider) ? res.split(divider)[0] : res
+    // What if the divider is the top of the file? Remove the first newline.
+    if (opts.divider && opts.divider.charAt(0) === '\n' && res.indexOf(opts.divider.slice(1)) === 0) {
+      return ''
+    }
+    return (opts.divider) ? res.split(opts.divider)[0] : res
   })
 }
 
-function getLastTasks () {
-  return pify(fs.readdir)(logDir).then(res => {
+function getLastTasks (opts) {
+  return pify(fs.readdir)(opts.logDir).then(res => {
     if (res.length === 0) {
       throw new Error('No files in log directory')
     }
-    return res[res.length - 1]
+    // Filter to only get date files
+    return _.last(_.filter(res, (file) => file.match(/[\d-]*.md/)))
   }).then(res => {
-    return pify(fs.readFile)(path.resolve(logDir, res), 'utf8').then(res => {
-      return res.split(nextSection)[1]
+    return pify(fs.readFile)(path.resolve(opts.logDir, res), 'utf8').then(res => {
+      return res.split(opts.nextSection)[1]
     }).catch(err => {
       console.log('Unable to get previous tasks.')
       return err
@@ -134,24 +95,29 @@ function getLastTasks () {
   })
 }
 
-function createLogFile (date) {
-  const file = `${logDir}/${date}.md`
+function createLogFile (date, opts) {
+  const file = `${opts.logDir}/${date}.md`
 
-  return mkdirp(logDir).then((res) => {
+  return mkdirp(opts.logDir).then((res) => {
     return fileExists(file)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return getLastTasks().then(tasks => {
-        return generateTemplate(date, tasks)
+      return getLastTasks(opts).then(tasks => {
+        return generateTemplate(date, tasks, opts)
           .then(template => writeFile(file, template))
       })
     }
-  }).then(res => openFile(file))
+  }).then(res => {
+    if (opts.test) {
+      return
+    }
+    openFile(file, opts)
+  })
 }
 
-function openYesterday () {
-  const yesterdayFile = `${logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
-  return mkdirp(logDir).then((res) => {
+function openYesterday (opts) {
+  const yesterdayFile = `${opts.logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
+  return mkdirp(opts.logDir).then((res) => {
     return fileExists(yesterdayFile)
   }).catch((err) => {
     // Don't create it or open it if it doesn't exist
@@ -160,23 +126,16 @@ function openYesterday () {
       process.exit(0)
     }
   }).then((val) => {
-    openFile(yesterdayFile)
+    openFile(yesterdayFile, opts)
   })
 }
 
-function initProject (projectName) {
-  const parentFolder = logDir.split('/')[logDir.split('/').length - 2]
-  projectName = (typeof projectName === 'string') ? projectName : parentFolder
-  // Create a dir for the project if it's not in one
-  if (typeof projectName === 'string' && projectName !== parentFolder) {
-    // Note: by default, path will point to the init, not to the log folder
-    logDir = path.resolve((cli.flags.path) ? cli.flags.path : process.cwd(), `${projectName}/log`)
-  }
-  return mkdirp(logDir).then((res) => {
-    return fileExists(`${logDir}/../README.md`)
+function initProject (opts) {
+  return mkdirp(opts.logDir).then((res) => {
+    return fileExists(`${opts.logDir}/../README.md`)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return writeFile(`${logDir}/../README.md`, `# ${projectName}
+      return writeFile(`${opts.logDir}/../README.md`, `# ${opts.projectName}
 
 ## Mission
 
@@ -186,21 +145,10 @@ function initProject (projectName) {
 
 ## Tracking Location`)
     }
-  }).then(() => fileExists(`${logDir}/../TODO.md`)
+  }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
   ).catch(err => {
     if (err.code === 'ENOENT') {
-      return writeFile(`${logDir}/../TODO.md`, divider)
+      return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
     }
   })
-}
-
-// Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
-if (cli.flags.init) {
-  initProject(cli.flags.init)
-} else if (cli.flags.yesterday) {
-  openYesterday()
-} else if (cli.flags.tomorrow) {
-  createLogFile(moment().add(1, 'days').format('YYYY-MM-DD'))
-} else {
-  createLogFile(moment().format('YYYY-MM-DD'))
 }

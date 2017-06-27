@@ -1,4 +1,4 @@
-# ships-log
+# Ship's Log
 
 > Open up a log file for today in a project folder
 
@@ -64,9 +64,10 @@ log --path=~/Desktop
 - `-i, --init` Initialize a project folder (with optional name)
 - `-m, --tomorrow` Make tomorrow's file
 - `-p, --path` Specify where the log file should exist
-- `-r, --routines <filename>` Add in a routine file.
+- `-r, --routines <filename>` Add in a routine file
 - `-y, --yesterday` Print yesterday's tasks which will be added to today
 - `--divider` Send a customer divider for parsing additional task files
+  Default: `-----` on a new line
 - `--tasksfile` Add a custom taskfile to check to
 
 ## Useful Aliases for your .bash_profile

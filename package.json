@@ -1,19 +1,25 @@
 {
   "name": "ships-log",
+<<<<<<< HEAD
   "version": "1.0.11",
+=======
+  "version": "1.1.3",
+>>>>>>> f5b7fd5fcc3ac32b31cd4cd31081c647c2cfb3b8
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard",
+    "test": "standard && mocha test.js"
   },
   "bin": {
-    "log": "index.js"
+    "ship": "cli.js"
   },
   "keywords": [],
   "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
   "license": "MIT",
   "dependencies": {
     "file-exists": "^3.0.2",
+    "lodash": "^4.17.4",
     "meow": "^3.7.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.17.1",
@@ -24,7 +30,18 @@
     "write": "^0.3.2"
   },
   "coordinates": [
+<<<<<<< HEAD
     45.5191902,
     -73.578946
   ]
+=======
+    55.947039,
+    -3.1867398
+  ],
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^3.3.0",
+    "standard": "^10.0.2"
+  }
+>>>>>>> f5b7fd5fcc3ac32b31cd4cd31081c647c2cfb3b8
 }
