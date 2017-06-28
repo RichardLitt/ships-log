@@ -61,7 +61,7 @@ var opts = {
   parentFolder: logDir.split('/')[logDir.split('/').length - 2],
   projectName: (typeof cli.flags.init === 'string') ? cli.flags.init : this.parentFolder,
   routines: cli.flags.routines,
-  tasksFile: cli.flags.tasksFile,
+  tasksFile: cli.flags.tasksfile,
   app: process.env.IDE
 }
 
