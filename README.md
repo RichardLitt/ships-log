@@ -85,7 +85,7 @@ alias todo=$IDE' '$BASEDIR'todo.md'
 
 ## Contribute
 
-This is mainly for me. Please open an issue if you want to contribute, first, as I am unlikely to merge if I disagree with a change.
+Please do! Open an issue if you want to contribute something.
 
 ## License
 
