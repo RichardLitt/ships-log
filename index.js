@@ -81,7 +81,9 @@ function getLastTasks (opts) {
       return err
     })
   }).catch(err => {
-    console.log(err.message, '- continuing...')
+    if (!opts.test) {
+      console.log(err.message, '- continuing...')
+    }
     return err
   })
 }
