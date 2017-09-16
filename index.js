@@ -145,10 +145,12 @@ function initProject (opts) {
 
 ## Tracking Location`)
     }
+    throw new Error('Unable to read or wirte README file')
   }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
   ).catch(err => {
     if (err.code === 'ENOENT') {
       return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
     }
+    throw new Error('Unable to read or write TODO file')
   })
 }
