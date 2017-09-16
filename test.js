@@ -11,14 +11,14 @@ describe('create log file', () => {
   beforeEach(function () {
     // runs before each test in this block
     fs.unlink(path.join(__dirname, `temp/test.md`), (err, res) => {
-      if (err) { console.log(err) }
+      if (err) {} // All is good
     })
   })
 
   it('creates a file', function (done) {
     var filename = 'test'
     log.createLogFile(filename, {
-      logDir: '/Users/richard/src/ships-log/temp',
+      logDir: path.join(__dirname, 'temp'),
       test: true
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${filename}.md`), (err, res) => {
@@ -30,7 +30,7 @@ describe('create log file', () => {
     var fileName = 'test'
     var falseFile = 'err'
     log.createLogFile(fileName, {
-      logDir: '/Users/richard/src/ships-log/temp',
+      logDir: path.join(__dirname, 'temp'),
       test: true
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${falseFile}.md`), (err, res) => {
