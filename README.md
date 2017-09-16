@@ -1,5 +1,7 @@
 # Ship's Log
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/RichardLitt/ships-log.svg)](https://greenkeeper.io/)
+
 > Open up a log file for today in a project folder
 
 This is a to do list manager without frills, that allows you to use Git's power of line changes with a daily file for each todo, and to carry tasks over from previous files.
