@@ -1,11 +1,12 @@
 {
   "name": "ships-log",
-  "version": "1.1.5",
+  "version": "0.0.0-development",
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
     "lint": "standard",
-    "test": "standard && mocha test.js"
+    "test": "standard && mocha test.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "bin": {
     "ship": "cli.js"
@@ -32,6 +33,11 @@
   "devDependencies": {
     "assert": "^1.4.1",
     "mocha": "^3.3.0",
-    "standard": "^10.0.2"
+    "standard": "^10.0.2",
+    "semantic-release": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RichardLitt/ships-log.git"
   }
 }
