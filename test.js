@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, beforeEach */
 
 const assert = require('assert')
 const log = require('./index.js')
@@ -8,6 +8,13 @@ const path = require('path')
 // Use https://www.npmjs.com/package/tmp to clean up and remove file.
 
 describe('create log file', () => {
+  beforeEach(function () {
+    // runs before each test in this block
+    fs.unlink(path.join(__dirname, `temp/test.md`), (err, res) => {
+      if (err) { console.log(err) }
+    })
+  })
+
   it('creates a file', function (done) {
     var filename = 'test'
     log.createLogFile(filename, {
