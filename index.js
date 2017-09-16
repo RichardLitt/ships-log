@@ -130,7 +130,7 @@ function initProject (opts) {
     if (err.code === 'ENOENT') {
       return writeFile(`${opts.logDir}/../README.md`, templates.readme(opts.projectName))
     }
-    throw new Error('Unable to read or wirte README file')
+    throw new Error('Unable to read or write README file')
   }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
   ).catch(err => {
     if (err.code === 'ENOENT') {
