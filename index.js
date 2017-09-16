@@ -8,6 +8,7 @@ const fileExists = pify(require('file-exists'))
 const mkdirp = pify(require('mkdirp'))
 const writeFile = pify(require('write'))
 const _ = require('lodash')
+const templates = require('./templates.js')
 
 module.exports = {
   getTasksFile,
@@ -43,17 +44,7 @@ function generateTemplate (heading, tasks, opts) {
   })
   .then(() => {
     // Mung it all together
-    var md =
-`# ${heading}
-
-## Mission
-${routines}
-## To Do
-${tasks}
-## Roundup
-${opts.nextSection}
-`
-    return md
+    return templates.daily(heading, routines, tasks, opts.nextSection)
   })
 }
 
@@ -135,15 +126,7 @@ function initProject (opts) {
     return fileExists(`${opts.logDir}/../README.md`)
   }).catch(err => {
     if (err.code === 'ENOENT') {
-      return writeFile(`${opts.logDir}/../README.md`, `# ${opts.projectName}
-
-## Mission
-
-## Collaborators
-
-## Criteria for success
-
-## Tracking Location`)
+      return writeFile(`${opts.logDir}/../README.md`, templates.readme(opts.projectName))
     }
     throw new Error('Unable to read or wirte README file')
   }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
