@@ -4,7 +4,7 @@ const opn = require('opn')
 const path = require('path')
 const pTry = require('p-try')
 const pify = require('pify')
-const fileExists = pify(require('file-exists'))
+const fileExists = require('file-exists')
 const mkdirp = pify(require('mkdirp'))
 const writeFile = pify(require('write'))
 const _ = require('lodash')
@@ -94,7 +94,10 @@ function createLogFile (date, opts) {
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(file)
   }).catch(err => {
-    if (err.code === 'ENOENT') {
+    console.log('Unable to find out if file exists')
+    throw err
+  }).then(res => {
+    if (res === false) {
       return getLastTasks(opts).then(tasks => {
         return generateTemplate(date, tasks, opts)
           .then(template => writeFile(file, template))
@@ -108,34 +111,38 @@ function createLogFile (date, opts) {
   })
 }
 
+// TODO Allow for sending in a specific date to open
 function openYesterday (opts) {
   const yesterdayFile = `${opts.logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
-  return mkdirp(opts.logDir).then((res) => {
-    return fileExists(yesterdayFile)
-  }).catch((err) => {
-    // Don't create it or open it if it doesn't exist
-    if (err) {
-      console.log("I don't remember yesterday. Today, it rained.")
-      process.exit(0)
-    }
-  }).then((val) => {
-    openFile(yesterdayFile, opts)
-  })
+  return mkdirp(opts.logDir)
+    .then((res) => fileExists(yesterdayFile))
+    .then((res) => {
+      if (!res) {
+        return res
+      }
+      openFile(yesterdayFile, opts)
+    })
 }
 
 function initProject (opts) {
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(`${opts.logDir}/../README.md`)
   }).catch(err => {
-    if (err.code === 'ENOENT') {
+    if (err) {
+      throw new Error('Unable to read or write README file')
+    }
+  }).then(res => {
+    if (res === false) {
       return writeFile(`${opts.logDir}/../README.md`, templates.readme(opts.projectName))
     }
-    throw new Error('Unable to read or write README file')
-  }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
-  ).catch(err => {
-    if (err.code === 'ENOENT') {
+  }).then(() => fileExists(`${opts.logDir}/../TODO.md`))
+  .then(res => {
+    if (res === false) {
       return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
     }
-    throw new Error('Unable to read or write TODO file')
+  }).catch(err => {
+    if (err) {
+      throw new Error('Unable to read or write TODO file')
+    }
   })
 }

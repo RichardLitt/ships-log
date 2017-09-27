@@ -74,7 +74,14 @@ if (cli.flags.init) {
   }
   log.initProject(opts)
 } else if (cli.flags.yesterday) {
-  log.openYesterday(opts)
+  log.openYesterday(opts).then(res => {
+    if (!res) {
+      // Don't create it or open it if it doesn't exist
+      // Note: This quote is from _Three Days of the Condor_
+      console.log("I don't remember yesterday. Today, it rained.")
+      process.exit(0)
+    }
+  })
 } else if (cli.flags.tomorrow) {
   log.createLogFile(moment().add(1, 'days').format('YYYY-MM-DD'), opts)
 } else {
