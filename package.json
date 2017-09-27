@@ -15,7 +15,7 @@
   "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
   "license": "MIT",
   "dependencies": {
-    "file-exists": "^4.0.0",
+    "file-exists": "^5.0.0",
     "lodash": "^4.17.4",
     "meow": "^3.7.0",
     "mkdirp": "^0.5.1",
