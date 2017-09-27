@@ -27,7 +27,7 @@ describe('create log file', () => {
 
     log.createLogFile(filename, {
       logDir: logDir,
-      test: true
+      noOpen: true
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${filename}.md`), (err, res) => {
       (err) ? done(err) : done()
@@ -39,7 +39,7 @@ describe('create log file', () => {
     var falseFile = 'err'
     log.createLogFile(fileName, {
       logDir: logDir,
-      test: true
+      noOpen: true
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${falseFile}.md`), (err, res) => {
       (err)
@@ -77,7 +77,7 @@ describe('opens yesterday', () => {
   it('will open the file otherwise', function (done) {
     log.createLogFile(yesterdayFile, {
       logDir: logDir,
-      test: true
+      noOpen: true
     })
     setTimeout(() => fs.stat(path.join(logDir, yesterdayFile + '.md'), (err, res) => {
       (err) ? done(err) : done()

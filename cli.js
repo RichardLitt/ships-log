@@ -19,6 +19,7 @@ const cli = meow([`
     --divider Send a customer divider for parsing additional task files
       Default: '-----' on a new line
     --tasksfile Add a custom taskfile to check to
+    --noOpen Don't open files (for tests)
 
   Examples
     $ log
@@ -62,7 +63,8 @@ var opts = {
   projectName: (typeof cli.flags.init === 'string') ? cli.flags.init : this.parentFolder,
   routines: cli.flags.routines,
   tasksFile: cli.flags.tasksfile,
-  app: process.env.IDE
+  app: process.env.IDE,
+  noOpen: cli.flags.noOpen
 }
 
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.

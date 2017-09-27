@@ -81,7 +81,7 @@ function getLastTasks (opts) {
       return err
     })
   }).catch(err => {
-    if (!opts.test) {
+    if (!opts.noOpen) {
       console.log(err.message, '- continuing...')
     }
     return err
@@ -104,7 +104,7 @@ function createLogFile (date, opts) {
       })
     }
   }).then(res => {
-    if (opts.test) {
+    if (opts.noOpen) {
       return
     }
     openFile(file, opts)
