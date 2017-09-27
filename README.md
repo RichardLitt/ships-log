@@ -38,25 +38,25 @@ npm i -g ships-log
 ## Usage
 
 ```sh
-log
+ship
 # Will automatically open or create today's date file in `log/`
 
-log --init
+ship --init
 # Will create `log/`, `README.md`, and `TODO.md` in the current folder.
 
-log --init="project"
+ship --init="project"
 # Will create a folder named `project` with the above files in it
 
-log --yesterday
+ship --yesterday
 # Will open yesterday's log file
 
-log --tomorrow
+ship --tomorrow
 # Will generate tomorrow's file, with tasks from the last file's next section
 
-log --routines=routines.md --tasksfile=todo.md --divider='--Stop Here--'
+ship --routines=routines.md --tasksfile=todo.md --divider='--Stop Here--'
 # Will create today's file, adding in routines and any tasks listed before the divider in the todo file
 
-log --path=~/Desktop
+ship --path=~/Desktop
 # Will create a file on the Desktop for you
 ```
 
