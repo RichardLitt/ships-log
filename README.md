@@ -87,6 +87,8 @@ alias todo=$IDE' '$BASEDIR'todo.md'
 
 Please do! Open an issue if you want to contribute something.
 
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ## License
 
 [MIT](LICENSE) © 2017 [Richard Littauer](https://burntfen.com)
