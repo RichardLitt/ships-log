@@ -1,4 +1,4 @@
-/* global describe, it, beforeEach, afterEach */
+/* global describe, it, after, afterEach */
 
 const assert = require('assert')
 const log = require('./index.js')
@@ -12,15 +12,21 @@ const moment = require('moment')
 // getLastTasks,
 // initProject,
 
-// createLogFile,
-describe('create log file', () => {
-  beforeEach(function () {
-    // runs before each test in this block
-    fs.unlink(path.join(__dirname, `temp/test.md`), (err, res) => {
-      if (err) {} // All is good
+function unlinkFile (dir, file) {
+  fs.unlink(path.join(dir, file + '.md'), (err, res) => {
+    if (err) { console.log(`Unable to delete ${file}.md file`); return }
+    fs.rmdir(dir, (err) => {
+      if (err) { console.log(`Unable to delete test directory ${dir}`) }
     })
   })
-  var logDir = path.join(__dirname, 'temp')
+}
+
+var logDir = path.join(__dirname, 'temp')
+
+// createLogFile,
+describe('create log file', () => {
+  // runs before each test in this block
+  afterEach(() => { unlinkFile(logDir, 'test') })
 
   it('creates a file', function (done) {
     var filename = 'test'
@@ -52,17 +58,11 @@ describe('create log file', () => {
 
 // openYesterday
 describe('opens yesterday', () => {
-  var logDir = path.join(__dirname, 'temp')
   var yesterdayFile = `${moment().subtract(1, 'days').format('YYYY-MM-DD')}`
 
-  function unlinkFile () {
-    fs.unlink(path.join(logDir, yesterdayFile + '.md'), (err, res) => {
-      if (err) {} // All is good
-    })
-  }
-
-  beforeEach(function () { unlinkFile() })
-  afterEach(function () { unlinkFile() })
+  after(() => {
+    unlinkFile(logDir, yesterdayFile)
+  })
 
   it('will exit if yesterday does not exist', function (done) {
     log.openYesterday({
