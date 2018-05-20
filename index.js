@@ -22,6 +22,11 @@ function generateTemplate (heading, tasks, opts) {
   var routines = ''
   tasks = (typeof tasks === 'string') ? tasks : ''
 
+  if (!opts.routines && !opts.tasksFile) {
+    // Using pTry here is stupid. It just expects a promise.
+    return pTry(() => templates.daily(heading, routines, tasks, opts.nextSection))
+  }
+
   // Get the routines if they exist
   return pTry(() => getTasksFile(opts.routines, opts))
     .then(res => {
@@ -33,17 +38,19 @@ function generateTemplate (heading, tasks, opts) {
       }
     })
   // Get the extra tasks if specified
-    .then(() => pTry(() => getTasksFile(opts.tasksFile, opts)))
-    .then(res => {
-      tasks = tasks + '\n' + res
-    })
-    .catch(err => {
-      if (err.message !== 'Path must be a string. Received undefined') {
-        throw new Error('Unable to read tasks file', err)
-      }
+    .then(() => {
+      return pTry(() => getTasksFile(opts.tasksFile, opts))
+        .then(res => {
+          tasks = tasks + '\n' + res
+        })
+        .catch(err => {
+          if (err.message !== 'Path must be a string. Received undefined') {
+            throw new Error('Unable to read tasks file', err)
+          }
+        })
     })
     .then(() => {
-    // Mung it all together
+      // Mung it all together
       return templates.daily(heading, routines, tasks, opts.nextSection)
     })
 }
@@ -100,14 +107,16 @@ function createLogFile (date, opts) {
     if (res === false) {
       return getLastTasks(opts).then(tasks => {
         return generateTemplate(date, tasks, opts)
-          .then(template => writeFile(file, template))
+          .then(template => {
+            writeFile(file, template)
+          })
       })
     }
   }).then(res => {
-    if (opts.noOpen) {
-      return
-    }
+    if (opts.noOpen) return
     openFile(file, opts)
+  }).catch(err => {
+    throw err
   })
 }
 
