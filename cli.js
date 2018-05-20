@@ -5,7 +5,7 @@ const path = require('path')
 const moment = require('moment')
 const log = require('./index.js')
 
-const cli = meow([`
+const cli = meow(`
   Usage
     $ project
 
@@ -42,7 +42,7 @@ const cli = meow([`
 
     $ log --path=~/Desktop
     # Will create a file on the Desktop for you
-`], {
+`, {
   'alias': {
     'h': 'help',
     'i': 'init',
