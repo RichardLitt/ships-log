@@ -24,28 +24,28 @@ function generateTemplate (heading, tasks, opts) {
 
   // Get the routines if they exist
   return pTry(() => getTasksFile(opts.routines, opts))
-  .then(res => {
-    routines = '\n' + res
-  })
-  .catch(err => {
-    if (err.message !== 'Path must be a string. Received undefined') {
-      throw new Error('Unable to read routine file', err)
-    }
-  })
+    .then(res => {
+      routines = '\n' + res
+    })
+    .catch(err => {
+      if (err.message !== 'Path must be a string. Received undefined') {
+        throw new Error('Unable to read routine file', err)
+      }
+    })
   // Get the extra tasks if specified
-  .then(() => pTry(() => getTasksFile(opts.tasksFile, opts)))
-  .then(res => {
-    tasks = tasks + '\n' + res
-  })
-  .catch(err => {
-    if (err.message !== 'Path must be a string. Received undefined') {
-      throw new Error('Unable to read tasks file', err)
-    }
-  })
-  .then(() => {
+    .then(() => pTry(() => getTasksFile(opts.tasksFile, opts)))
+    .then(res => {
+      tasks = tasks + '\n' + res
+    })
+    .catch(err => {
+      if (err.message !== 'Path must be a string. Received undefined') {
+        throw new Error('Unable to read tasks file', err)
+      }
+    })
+    .then(() => {
     // Mung it all together
-    return templates.daily(heading, routines, tasks, opts.nextSection)
-  })
+      return templates.daily(heading, routines, tasks, opts.nextSection)
+    })
 }
 
 function openFile (file, opts) {
@@ -136,13 +136,13 @@ function initProject (opts) {
       return writeFile(`${opts.logDir}/../README.md`, templates.readme(opts.projectName))
     }
   }).then(() => fileExists(`${opts.logDir}/../TODO.md`))
-  .then(res => {
-    if (res === false) {
-      return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
-    }
-  }).catch(err => {
-    if (err) {
-      throw new Error('Unable to read or write TODO file')
-    }
-  })
+    .then(res => {
+      if (res === false) {
+        return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
+      }
+    }).catch(err => {
+      if (err) {
+        throw new Error('Unable to read or write TODO file')
+      }
+    })
 }
