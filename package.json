@@ -1,6 +1,6 @@
 {
   "name": "ships-log",
-  "version": "0.0.0-development",
+  "version": "0.0.0",
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
