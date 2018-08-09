@@ -15,7 +15,8 @@ module.exports = {
   getLastTasks,
   createLogFile,
   initProject,
-  openYesterday
+  openYesterday,
+  checkIfInLogFile
 }
 
 function generateTemplate (heading, tasks, opts) {
@@ -74,6 +75,7 @@ function getTasksFile (filename, opts) {
 }
 
 function getLastTasks (opts) {
+  opts = checkIfInLogFile(opts)
   return pify(fs.readdir)(opts.logDir).then(res => {
     if (res.length === 0) {
       throw new Error('No files in log directory')
@@ -95,7 +97,15 @@ function getLastTasks (opts) {
   })
 }
 
+function checkIfInLogFile (opts) {
+  if (opts.logDir.endsWith('log/log')) {
+    opts.logDir = opts.logDir.replace('log/log', 'log')
+  }
+  return opts
+}
+
 function createLogFile (date, opts) {
+  opts = checkIfInLogFile(opts)
   const file = `${opts.logDir}/${date}.md`
 
   return mkdirp(opts.logDir).then((res) => {
@@ -103,8 +113,8 @@ function createLogFile (date, opts) {
   }).catch(err => {
     console.log('Unable to find out if file exists')
     throw err
-  }).then(res => {
-    if (res === false) {
+  }).then(fileExists => {
+    if (!fileExists) {
       return getLastTasks(opts).then(tasks => {
         return generateTemplate(date, tasks, opts)
           .then(template => {
@@ -122,6 +132,7 @@ function createLogFile (date, opts) {
 
 // TODO Allow for sending in a specific date to open
 function openYesterday (opts) {
+  opts = checkIfInLogFile(opts)
   const yesterdayFile = `${opts.logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
   return mkdirp(opts.logDir)
     .then((res) => fileExists(yesterdayFile))
@@ -134,6 +145,7 @@ function openYesterday (opts) {
 }
 
 function initProject (opts) {
+  opts = checkIfInLogFile(opts)
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(`${opts.logDir}/../README.md`)
   }).catch(err => {

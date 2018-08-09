@@ -72,7 +72,7 @@ ship --path=~/Desktop
   Default: `-----` on a new line
 - `--tasksfile` Add a custom taskfile to check to
 
-## Useful Aliases for your .bash_profile
+### Useful Aliases for your .bash_profile
 
 ```sh
 alias today='ship -p '$BASEDIR'log --tasksfile '$BASEDIR'todo.md -r '$BASEDIR'daily_routines.md'
@@ -82,6 +82,10 @@ alias yesterday='ship -y -p '$BASEDIR'log'
 alias y=yesterday
 alias todo=$IDE' '$BASEDIR'todo.md'
 ```
+
+### Notes
+
+- Ship's Log will not allow you to have a `log` directory embedded inside another `log` directory. It will automatically default to creating files in the current working directory if you are in a `log` directory already.
 
 ## Contribute
 
