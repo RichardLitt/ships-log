@@ -11,6 +11,9 @@
   "bin": {
     "ship": "cli.js"
   },
+  "engines": {
+		"node": ">=6"
+  },
   "keywords": [],
   "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
   "license": "MIT",
