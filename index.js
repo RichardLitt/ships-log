@@ -6,7 +6,7 @@ const pTry = require('p-try')
 const pify = require('pify')
 const fileExists = require('file-exists')
 const mkdirp = pify(require('mkdirp'))
-const writeFile = pify(require('write'))
+const write = require('write')
 const _ = require('lodash')
 const templates = require('./templates.js')
 
@@ -98,8 +98,8 @@ function getLastTasks (opts) {
 }
 
 function checkIfInLogFile (opts) {
-  if (opts.logDir.endsWith('log/log')) {
-    opts.logDir = opts.logDir.replace('log/log', 'log')
+  if (opts.logDir.endsWith('/log/log')) {
+    opts.logDir = opts.logDir.replace('/log/log', '/log')
   }
   return opts
 }
@@ -118,7 +118,9 @@ function createLogFile (date, opts) {
       return getLastTasks(opts).then(tasks => {
         return generateTemplate(date, tasks, opts)
           .then(template => {
-            writeFile(file, template)
+            return write(file, template)
+              .catch(err => console.log(err))
+              .then(() => console.log(`Opened ${file}.`))
           })
       })
     }
@@ -153,13 +155,21 @@ function initProject (opts) {
       throw new Error('Unable to read or write README file')
     }
   }).then(res => {
+    let file
     if (res === false) {
-      return writeFile(`${opts.logDir}/../README.md`, templates.readme(opts.projectName))
+      file = `${opts.logDir}/../README.md`
+      return write(file, templates.readme(opts.projectName))
+        .catch(err => console.log(err))
+        .then(() => console.log(`Opened ${file}.`))
     }
   }).then(() => fileExists(`${opts.logDir}/../TODO.md`))
     .then(res => {
+      let file
       if (res === false) {
-        return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
+        file = `${opts.logDir}/../TODO.md`
+        return write(file, opts.divider)
+          .catch(err => console.log(err))
+          .then(() => console.log(`Opened ${file}.`))
       }
     }).catch(err => {
       if (err) {
