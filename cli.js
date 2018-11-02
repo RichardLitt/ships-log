@@ -5,7 +5,7 @@ const path = require('path')
 const moment = require('moment')
 const log = require('./index.js')
 
-const cli = meow([`
+const cli = meow(`
   Usage
     $ project
 
@@ -19,6 +19,7 @@ const cli = meow([`
     --divider Send a customer divider for parsing additional task files
       Default: '-----' on a new line
     --tasksfile Add a custom taskfile to check to
+    --noOpen Don't open files (for tests)
 
   Examples
     $ log
@@ -41,7 +42,7 @@ const cli = meow([`
 
     $ log --path=~/Desktop
     # Will create a file on the Desktop for you
-`], {
+`, {
   'alias': {
     'h': 'help',
     'i': 'init',
@@ -61,8 +62,9 @@ var opts = {
   parentFolder: logDir.split('/')[logDir.split('/').length - 2],
   projectName: (typeof cli.flags.init === 'string') ? cli.flags.init : this.parentFolder,
   routines: cli.flags.routines,
-  tasksFile: cli.flags.tasksFile,
-  app: process.env.IDE
+  tasksFile: cli.flags.tasksfile,
+  app: process.env.IDE,
+  noOpen: cli.flags.noOpen
 }
 
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
@@ -74,7 +76,14 @@ if (cli.flags.init) {
   }
   log.initProject(opts)
 } else if (cli.flags.yesterday) {
-  log.openYesterday(opts)
+  log.openYesterday(opts).then(res => {
+    if (!res) {
+      // Don't create it or open it if it doesn't exist
+      // Note: This quote is from _Three Days of the Condor_
+      console.log("I don't remember yesterday. Today, it rained.")
+      process.exit(0)
+    }
+  })
 } else if (cli.flags.tomorrow) {
   log.createLogFile(moment().add(1, 'days').format('YYYY-MM-DD'), opts)
 } else {

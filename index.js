@@ -4,57 +4,56 @@ const opn = require('opn')
 const path = require('path')
 const pTry = require('p-try')
 const pify = require('pify')
-const fileExists = pify(require('file-exists'))
+const fileExists = require('file-exists')
 const mkdirp = pify(require('mkdirp'))
-const writeFile = pify(require('write'))
+const write = require('write')
 const _ = require('lodash')
+const templates = require('./templates.js')
 
 module.exports = {
   getTasksFile,
   getLastTasks,
   createLogFile,
   initProject,
-  openYesterday
+  openYesterday,
+  checkIfInLogFile
 }
 
 function generateTemplate (heading, tasks, opts) {
   var routines = ''
   tasks = (typeof tasks === 'string') ? tasks : ''
 
+  if (!opts.routines && !opts.tasksFile) {
+    // Using pTry here is stupid. It just expects a promise.
+    return pTry(() => templates.daily(heading, routines, tasks, opts.nextSection))
+  }
+
   // Get the routines if they exist
   return pTry(() => getTasksFile(opts.routines, opts))
-  .then(res => {
-    routines = '\n' + res
-  })
-  .catch(err => {
-    if (opts.routines && err.message !== 'Path must be a string. Received undefined') {
-      throw new Error('Unable to read routine file', err)
-    }
-  })
+    .then(res => {
+      routines = '\n' + res
+    })
+    .catch(err => {
+      if (err.message !== 'Path must be a string. Received undefined') {
+        throw new Error('Unable to read routine file', err)
+      }
+    })
   // Get the extra tasks if specified
-  .then(() => pTry(() => getTasksFile(opts.tasksFile, opts)))
-  .then(res => {
-    tasks = tasks + '\n' + res
-  })
-  .catch(err => {
-    if (opts.tasksFile && err.message !== 'Path must be a string. Received undefined') {
-      throw new Error('Unable to read tasks file', err)
-    }
-  })
-  .then(() => {
-    // Mung it all together
-    var md =
-`# ${heading}
-
-## Mission
-${routines}
-## To Do
-${tasks}
-## Roundup
-${opts.nextSection}
-`
-    return md
-  })
+    .then(() => {
+      return pTry(() => getTasksFile(opts.tasksFile, opts))
+        .then(res => {
+          tasks = tasks + '\n' + res
+        })
+        .catch(err => {
+          if (err.message !== 'Path must be a string. Received undefined') {
+            throw new Error('Unable to read tasks file', err)
+          }
+        })
+    })
+    .then(() => {
+      // Mung it all together
+      return templates.daily(heading, routines, tasks, opts.nextSection)
+    })
 }
 
 function openFile (file, opts) {
@@ -76,6 +75,7 @@ function getTasksFile (filename, opts) {
 }
 
 function getLastTasks (opts) {
+  opts = checkIfInLogFile(opts)
   return pify(fs.readdir)(opts.logDir).then(res => {
     if (res.length === 0) {
       throw new Error('No files in log directory')
@@ -90,65 +90,90 @@ function getLastTasks (opts) {
       return err
     })
   }).catch(err => {
-    console.log(err.message, '- continuing...')
+    if (!opts.noOpen) {
+      console.log(err.message, '- continuing...')
+    }
     return err
   })
 }
 
+function checkIfInLogFile (opts) {
+  if (opts.logDir.endsWith('/log/log')) {
+    opts.logDir = opts.logDir.replace('/log/log', '/log')
+  }
+  return opts
+}
+
 function createLogFile (date, opts) {
+  opts = checkIfInLogFile(opts)
   const file = `${opts.logDir}/${date}.md`
 
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(file)
   }).catch(err => {
-    if (err.code === 'ENOENT') {
+    console.log('Unable to find out if file exists')
+    throw err
+  }).then(fileExists => {
+    if (!fileExists) {
       return getLastTasks(opts).then(tasks => {
         return generateTemplate(date, tasks, opts)
-          .then(template => writeFile(file, template))
+          .then(template => {
+            return write(file, template)
+              .catch(err => console.log(err))
+              .then(() => console.log(`Opened ${file}.`))
+          })
       })
     }
   }).then(res => {
-    if (opts.test) {
-      return
-    }
+    if (opts.noOpen) return
     openFile(file, opts)
+  }).catch(err => {
+    throw err
   })
 }
 
+// TODO Allow for sending in a specific date to open
 function openYesterday (opts) {
+  opts = checkIfInLogFile(opts)
   const yesterdayFile = `${opts.logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
-  return mkdirp(opts.logDir).then((res) => {
-    return fileExists(yesterdayFile)
-  }).catch((err) => {
-    // Don't create it or open it if it doesn't exist
-    if (err) {
-      console.log("I don't remember yesterday. Today, it rained.")
-      process.exit(0)
-    }
-  }).then((val) => {
-    openFile(yesterdayFile, opts)
-  })
+  return mkdirp(opts.logDir)
+    .then((res) => fileExists(yesterdayFile))
+    .then((res) => {
+      if (!res) {
+        return res
+      }
+      openFile(yesterdayFile, opts)
+    })
 }
 
 function initProject (opts) {
+  opts = checkIfInLogFile(opts)
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(`${opts.logDir}/../README.md`)
   }).catch(err => {
-    if (err.code === 'ENOENT') {
-      return writeFile(`${opts.logDir}/../README.md`, `# ${opts.projectName}
-
-## Mission
-
-## Collaborators
-
-## Criteria for success
-
-## Tracking Location`)
+    if (err) {
+      throw new Error('Unable to read or write README file')
     }
-  }).then(() => fileExists(`${opts.logDir}/../TODO.md`)
-  ).catch(err => {
-    if (err.code === 'ENOENT') {
-      return writeFile(`${opts.logDir}/../TODO.md`, opts.divider)
+  }).then(res => {
+    let file
+    if (res === false) {
+      file = `${opts.logDir}/../README.md`
+      return write(file, templates.readme(opts.projectName))
+        .catch(err => console.log(err))
+        .then(() => console.log(`Opened ${file}.`))
     }
-  })
+  }).then(() => fileExists(`${opts.logDir}/../TODO.md`))
+    .then(res => {
+      let file
+      if (res === false) {
+        file = `${opts.logDir}/../TODO.md`
+        return write(file, opts.divider)
+          .catch(err => console.log(err))
+          .then(() => console.log(`Opened ${file}.`))
+      }
+    }).catch(err => {
+      if (err) {
+        throw new Error('Unable to read or write TODO file')
+      }
+    })
 }
