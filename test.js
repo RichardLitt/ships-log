@@ -15,10 +15,7 @@ describe('createLogFile', () => {
       test: true
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${filename}.md`), (err, res) => {
-      if (err) {
-        done(err)
-      }
-      done()
+      done(err)
     }), 10)
   })
 
@@ -32,9 +29,9 @@ describe('createLogFile', () => {
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${falseFile}.md`), (err, res) => {
       if (err) {
         assert.ok(true)
-        done()
+      } else {
+        assert.notStrictEqual(falseFile, fileName, 'Wrong file created')
       }
-      assert.fail(falseFile, fileName, 'Wrong file created')
       done()
     }), 10)
   })
