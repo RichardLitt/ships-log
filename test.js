@@ -7,7 +7,7 @@ const path = require('path')
 
 // Use https://www.npmjs.com/package/tmp to clean up and remove file.
 
-describe('create log file', () => {
+describe('createLogFile', () => {
   it('creates a file', function (done) {
     var filename = 'test'
     log.createLogFile(filename, {

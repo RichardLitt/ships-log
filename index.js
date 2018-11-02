@@ -27,7 +27,7 @@ function generateTemplate (heading, tasks, opts) {
     routines = '\n' + res
   })
   .catch(err => {
-    if (err.message !== 'Path must be a string. Received undefined') {
+    if (opts.routines && err.message !== 'Path must be a string. Received undefined') {
       throw new Error('Unable to read routine file', err)
     }
   })
@@ -37,7 +37,7 @@ function generateTemplate (heading, tasks, opts) {
     tasks = tasks + '\n' + res
   })
   .catch(err => {
-    if (err.message !== 'Path must be a string. Received undefined') {
+    if (opts.tasksFile && err.message !== 'Path must be a string. Received undefined') {
       throw new Error('Unable to read tasks file', err)
     }
   })
