@@ -88,12 +88,12 @@ describe('opens yesterday', () => {
 describe('check if in a log dir', () => {
   it('will do nothing if not in a log dir', (done) => {
     let opts = log.checkIfInLogFile({logDir: '/test/log'})
-    assert.equal(opts.logDir, '/test/log')
+    assert.strictEqual(opts.logDir, '/test/log')
     done()
   })
   it('will remove extra log if in a log dir', (done) => {
     let opts = log.checkIfInLogFile({logDir: '/test/log/log'})
-    assert.equal(opts.logDir, '/test/log')
+    assert.strictEqual(opts.logDir, '/test/log')
     done()
   })
 })
