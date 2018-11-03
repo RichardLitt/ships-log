@@ -12,7 +12,7 @@
     "ship": "cli.js"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "keywords": [],
   "author": "Richard Littauer <richard.littauer@gmail.com> (http://burntfen.com)",
