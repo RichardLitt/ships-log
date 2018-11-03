@@ -58,7 +58,7 @@ function generateTemplate (heading, tasks, opts) {
 
 function openFile (file, opts) {
   console.log('Opening file...')
-  opn(file, {app: opts.app, wait: false})
+  opn(file, { app: opts.app, wait: false })
   process.exit(0)
 }
 
