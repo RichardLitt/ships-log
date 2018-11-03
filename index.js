@@ -24,8 +24,7 @@ function generateTemplate (heading, tasks, opts) {
   tasks = (typeof tasks === 'string') ? tasks : ''
 
   if (!opts.routines && !opts.tasksFile) {
-    // Using pTry here is stupid. It just expects a promise.
-    return pTry(() => templates.daily(heading, routines, tasks, opts.nextSection))
+    return templates.daily(heading, routines, tasks, opts.nextSection)
   }
 
   // Get the routines if they exist
@@ -116,11 +115,15 @@ function createLogFile (date, opts) {
   }).then(fileExists => {
     if (!fileExists) {
       return getLastTasks(opts).then(tasks => {
-        return generateTemplate(date, tasks, opts)
+        Promise.resolve(generateTemplate(date, tasks, opts))
           .then(template => {
             return write(file, template)
               .catch(err => console.log(err))
-              .then(() => console.log(`Opened ${file}.`))
+              .then(() => {
+                if (!opts.noOpen) {
+                  console.log(`Opened ${file}.`)
+                }
+              })
           })
       })
     }
