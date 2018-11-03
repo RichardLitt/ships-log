@@ -43,20 +43,50 @@ const cli = meow(`
     $ log --path=~/Desktop
     # Will create a file on the Desktop for you
 `, {
-  'alias': {
-    'h': 'help',
-    'i': 'init',
-    'p': 'path',
-    'm': 'tomorrow',
-    'r': 'routines',
-    'y': 'yesterday'
+  'flags': {
+    'help': {
+      type: 'boolean',
+      alias: 'h'
+    },
+    'init': {
+      // type: 'boolean', Can also be a string
+      alias: 'i'
+    },
+    'path': {
+      type: 'string',
+      alias: 'p'
+    },
+    'tomorrow': {
+      type: 'boolean',
+      alias: 't'
+    },
+    'routines': {
+      type: 'string',
+      alias: 'r'
+    },
+    'yesterday': {
+      type: 'boolean',
+      alias: 'y'
+    },
+    'tasksfile': {
+      type: 'string'
+    },
+    'noOpen': {
+      type: 'boolean'
+    },
+    'divider': {
+      type: 'string'
+    },
+    'nextSection': {
+      type: 'string'
+    }
   }
 })
 
 var logDir = (cli.flags.path) ? cli.flags.path : path.resolve(process.cwd(), 'log')
 
 var opts = {
-  nextSection: `\n## Next\n`,
+  nextSection: cli.flags.nextSection || `\n## Next\n`,
   divider: cli.flags.divider || '\n-----\n',
   logDir: logDir,
   parentFolder: logDir.split('/')[logDir.split('/').length - 2],
