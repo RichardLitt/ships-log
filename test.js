@@ -4,6 +4,7 @@ const assert = require('assert')
 const log = require('./index.js')
 const fs = require('fs')
 const path = require('path')
+const pify = require('pify')
 const moment = require('moment')
 
 // Use https://www.npmjs.com/package/tmp to clean up and remove file.
@@ -13,8 +14,9 @@ const moment = require('moment')
 // initProject,
 
 function unlinkFile (dir, file) {
-  fs.unlink(path.join(dir, file + '.md'), (err, res) => {
-    if (err) { console.log(`Unable to delete ${file}.md file`); return }
+  let filepath = path.join(dir, file + '.md')
+  fs.unlink(filepath, (err, res) => {
+    if (err) { console.log(`Unable to delete ${filepath} file`); return }
     fs.rmdir(dir, (err) => {
       if (err) { console.log(`Unable to delete test directory ${dir}`) }
     })
@@ -37,7 +39,7 @@ describe('create log file', () => {
     })
     setTimeout(() => fs.stat(path.join(__dirname, `temp/${filename}.md`), (err, res) => {
       done(err)
-    }), 10)
+    }), 50)
   })
 
   it('creates the right file', function (done) {
@@ -52,7 +54,118 @@ describe('create log file', () => {
         ? assert.ok(true)
         : assert.fail(falseFile, fileName, 'Wrong file created')
       done()
-    }), 10)
+    }), 50)
+  })
+
+  it('with routines file', function (done) {
+    var filename = 'test'
+
+    Promise.resolve(path.join(__dirname, `fixtures/routines.md`))
+      .then(routines => {
+        return log.createLogFile(filename, {
+          logDir: logDir,
+          noOpen: true,
+          routines: routines
+        })
+      })
+      .then(() => {
+        return setTimeout(() => {
+          let testfile
+          return pify(fs)
+            .readFile(path.join(__dirname, `temp/${filename}.md`), 'utf8')
+            .then((res) => {
+              testfile = res
+              return pify(fs).readFile(path.join(__dirname, `fixtures/file-with-subroutines.md`), 'utf8')
+            })
+            .then((fixture) => assert.strictEqual(testfile, fixture))
+            .then(() => done())
+            .catch((err) => done(err))
+        }, 50)
+      })
+  })
+
+  it('with tasks file', function (done) {
+    var filename = 'test'
+
+    Promise.resolve(path.join(__dirname, `fixtures/tasks.md`))
+      .then(tasks => {
+        return log.createLogFile(filename, {
+          logDir: logDir,
+          noOpen: true,
+          tasksFile: tasks
+        })
+      })
+      .then(() => {
+        return setTimeout(() => {
+          let testfile
+          return pify(fs)
+            .readFile(path.join(__dirname, `temp/${filename}.md`), 'utf8')
+            .then((res) => {
+              testfile = res
+              return pify(fs).readFile(path.join(__dirname, `fixtures/file-with-tasks.md`), 'utf8')
+            })
+            .then((fixture) => assert.strictEqual(testfile, fixture))
+            .then(() => done())
+            .catch((err) => done(err))
+        }, 50)
+      })
+  })
+
+  it('with tasks file', function (done) {
+    var filename = 'test'
+
+    Promise.resolve(path.join(__dirname, `fixtures/tasks.md`))
+      .then(tasks => {
+        return Promise.resolve(path.join(__dirname, 'fixtures/routines.md'))
+          .then((routines) => {
+            return log.createLogFile(filename, {
+              logDir: logDir,
+              noOpen: true,
+              routines: routines,
+              tasksFile: tasks
+            })
+          })
+      })
+      .then(() => {
+        return setTimeout(() => {
+          let testfile
+          return pify(fs)
+            .readFile(path.join(__dirname, `temp/${filename}.md`), 'utf8')
+            .then((res) => {
+              testfile = res
+              return pify(fs).readFile(path.join(__dirname, `fixtures/file-with-tasks-and-subroutines.md`), 'utf8')
+            })
+            .then((fixture) => assert.strictEqual(testfile, fixture))
+            .then(() => done())
+            .catch((err) => done(err))
+        }, 50)
+      })
+  })
+
+  it('without routines file', function (done) {
+    var filename = 'test'
+
+    Promise.resolve(path.join(__dirname, `fixtures/routines.md`))
+      .then(routines => {
+        return log.createLogFile(filename, {
+          logDir: logDir,
+          noOpen: true
+        })
+      })
+      .then(() => {
+        return setTimeout(() => {
+          let testfile
+          return pify(fs)
+            .readFile(path.join(__dirname, `temp/${filename}.md`), 'utf8')
+            .then((res) => {
+              testfile = res
+              return pify(fs).readFile(path.join(__dirname, `fixtures/file.md`), 'utf8')
+            })
+            .then((fixture) => assert.strictEqual(testfile, fixture))
+            .then(() => done())
+            .catch((err) => done(err))
+        }, 50)
+      })
   })
 })
 
@@ -81,7 +194,7 @@ describe('opens yesterday', () => {
     })
     setTimeout(() => fs.stat(path.join(logDir, yesterdayFile + '.md'), (err, res) => {
       (err) ? done(err) : done()
-    }), 10)
+    }), 50)
   })
 })
 
