@@ -18,8 +18,7 @@ ${routines}
 ## To Do
 ${tasks}
 ## Roundup
-${next}
-`
+${(next) ? next + '\n' : ''}`
 }
 
 module.exports = {
