@@ -1,6 +1,7 @@
 # Ship's Log
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/RichardLitt/ships-log.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/RichardLitt/ships-log.svg?branch=master)](https://travis-ci.org/RichardLitt/ships-log)
 
 > Open up a log file for today in a project folder
 
