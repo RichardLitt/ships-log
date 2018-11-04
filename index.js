@@ -138,14 +138,20 @@ function createLogFile (date, opts) {
 // TODO Allow for sending in a specific date to open
 function openYesterday (opts) {
   opts = checkIfInLogFile(opts)
-  const yesterdayFile = `${opts.logDir}/${moment().subtract(1, 'days').format('YYYY-MM-DD')}.md`
+  let date = moment().subtract(1, 'days')
+  if (opts.date) {
+    date = moment(opts.date)
+  }
+  const yesterdayFile = `${opts.logDir}/${date.format('YYYY-MM-DD')}.md`
   return mkdirp(opts.logDir)
     .then((res) => fileExists(yesterdayFile))
     .then((res) => {
       if (!res) {
         return res
       }
-      openFile(yesterdayFile, opts)
+      if (!opts.noOpen) {
+        openFile(yesterdayFile, opts)
+      }
     })
 }
 

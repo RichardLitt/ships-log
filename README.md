@@ -17,11 +17,11 @@ So, I built ships-log, which does this for me, just a bit easier.
 
 Using ships-log, I can easily initiate a folder structure for each project I like. It creates a README for me to think about the project, with a nice template — title, mission, criteria for success, notes — as well as a blank TODO file, and a log folder. In the log folder, log automatically creates a file named after the date, with another set of super helpful headings:
 
-**Mission**: What am I going to do today that will make me feel accomplished at the end of the day? What's the biggest rock?  
-**Routines**: What routines do I want here that I do every day?  
-**To Do**: What is there to do?  
-**Roundup**: For my post-mortem at the end. How did I do? What did I accomplish? How do I feel about?  
-**Next**: What tasks should be put into the next to do list?  
+**Mission**: What am I going to do today that will make me feel accomplished at the end of the day? What's the biggest rock?
+**Routines**: What routines do I want here that I do every day?
+**To Do**: What is there to do?
+**Roundup**: For my post-mortem at the end. How did I do? What did I accomplish? How do I feel about?
+**Next**: What tasks should be put into the next to do list?
 
 The next day, I'll automatically grab any tasks left over in the Next from the previous day, or marked in the main To Do list, and make a new one. I don't have to rewrite anything, and I have a very clear way of uploading and downloading state — of knowing where I was when I left a project, and what I need to do to get back into focusing on a given project.
 
@@ -50,6 +50,9 @@ ship --init="project"
 ship --yesterday
 # Will open yesterday's log file
 
+ship --date='2018-11-02'
+# Will open a specific date in the past
+
 ship --tomorrow
 # Will generate tomorrow's file, with tasks from the last file's next section
 
@@ -67,7 +70,8 @@ ship --path=~/Desktop
 - `-m, --tomorrow` Make tomorrow's file
 - `-p, --path` Specify where the log file should exist
 - `-r, --routines <filename>` Add in a routine file
-- `-y, --yesterday` Print yesterday's tasks which will be added to today
+- `-y, --yesterday` Open yesterday's file
+- `--date` Open a specific date in the past
 - `--divider` Send a customer divider for parsing additional task files
   Default: `-----` on a new line
 - `--tasksfile` Add a custom taskfile to check to

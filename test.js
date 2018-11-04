@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const pify = require('pify')
 const moment = require('moment')
+const write = require('write')
 
 // Use https://www.npmjs.com/package/tmp to clean up and remove file.
 
@@ -13,17 +14,27 @@ const moment = require('moment')
 // getLastTasks,
 // initProject,
 
+var logDir = path.join(__dirname, 'temp')
+
 function unlinkFile (dir, file) {
   let filepath = path.join(dir, file + '.md')
   fs.unlink(filepath, (err, res) => {
-    if (err) { console.log(`Unable to delete ${filepath} file`); return }
-    fs.rmdir(dir, (err) => {
-      if (err) { console.log(`Unable to delete test directory ${dir}`) }
-    })
+    if (err && err.message.indexOf('ENOENT: no such file or directory') !== 0) {
+      console.log(`Unable to delete ${filepath} file`)
+    }
   })
 }
 
-var logDir = path.join(__dirname, 'temp')
+function removeTempDir () {
+  fs.rmdir(logDir, (err) => {
+    if (err && err.message.indexOf('ENOENT: no such file or directory') !== 0) {
+      console.log(err.message)
+      console.log(`Unable to delete test directory ${logDir}`)
+    }
+  })
+}
+
+after(() => removeTempDir())
 
 // createLogFile,
 describe('create log file', () => {
@@ -171,15 +182,18 @@ describe('create log file', () => {
 
 // openYesterday
 describe('opens yesterday', () => {
-  var yesterdayFile = `${moment().subtract(1, 'days').format('YYYY-MM-DD')}`
+  const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
+  const anotherDate = '2018-11-02'
 
-  after(() => {
-    unlinkFile(logDir, yesterdayFile)
+  afterEach(() => {
+    unlinkFile(logDir, yesterdayDate)
+    unlinkFile(logDir, '2018-11-02')
   })
 
   it('will exit if yesterday does not exist', function (done) {
     log.openYesterday({
-      logDir: logDir
+      logDir: logDir,
+      noOpen: true
     }).then(res => {
       if (res === false) {
         done()
@@ -188,13 +202,27 @@ describe('opens yesterday', () => {
   })
 
   it('will open the file otherwise', function (done) {
-    log.createLogFile(yesterdayFile, {
+    log.createLogFile(yesterdayDate, {
       logDir: logDir,
       noOpen: true
     })
-    setTimeout(() => fs.stat(path.join(logDir, yesterdayFile + '.md'), (err, res) => {
+    setTimeout(() => fs.stat(path.join(logDir, yesterdayDate + '.md'), (err, res) => {
       (err) ? done(err) : done()
     }), 50)
+  })
+
+  it('will open another date if specified', function (done) {
+    let anotherDateFile = path.join(logDir, anotherDate + '.md')
+    write(anotherDateFile).then(() => {
+      log.openYesterday({
+        logDir: logDir,
+        date: anotherDate,
+        noOpen: true
+      })
+      setTimeout(() => fs.stat(anotherDateFile, (err, res) => {
+        (err) ? done(err) : done()
+      }), 50)
+    })
   })
 })
 

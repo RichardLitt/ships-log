@@ -16,6 +16,7 @@ const cli = meow(`
     -p, --path Specify where the log folder exists
     -r, --routines Add a custom routines file
     -y, --yesterday Open yesterday's file
+    --date Open a specific date in the past
     --divider Send a customer divider for parsing additional task files
       Default: '-----' on a new line
     --tasksfile Add a custom taskfile to check to
@@ -79,6 +80,9 @@ const cli = meow(`
     },
     'nextSection': {
       type: 'string'
+    },
+    'date': {
+      type: 'string'
     }
   }
 })
@@ -94,7 +98,8 @@ var opts = {
   routines: cli.flags.routines,
   tasksFile: cli.flags.tasksfile,
   app: process.env.IDE,
-  noOpen: cli.flags.noOpen
+  noOpen: cli.flags.noOpen,
+  date: cli.flags.date
 }
 
 // Syntactic sugar. Really, `yesterday` is last tasks. Could be from today.
@@ -105,7 +110,7 @@ if (cli.flags.init) {
     opts.logDir = path.resolve((cli.flags.path) ? cli.flags.path : process.cwd(), `${opts.projectName}/log`)
   }
   log.initProject(opts)
-} else if (cli.flags.yesterday) {
+} else if (cli.flags.yesterday || cli.flags.date) {
   log.openYesterday(opts).then(res => {
     if (!res) {
       // Don't create it or open it if it doesn't exist
