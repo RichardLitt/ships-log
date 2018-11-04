@@ -106,7 +106,6 @@ function checkIfInLogFile (opts) {
 function createLogFile (date, opts) {
   opts = checkIfInLogFile(opts)
   const file = `${opts.logDir}/${date}.md`
-
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(file)
   }).catch(err => {
@@ -115,7 +114,7 @@ function createLogFile (date, opts) {
   }).then(fileExists => {
     if (!fileExists) {
       return getLastTasks(opts).then(tasks => {
-        Promise.resolve(generateTemplate(date, tasks, opts))
+        return Promise.resolve(generateTemplate(date, tasks, opts))
           .then(template => {
             return write(file, template)
               .catch(err => console.log(err))
