@@ -53,6 +53,41 @@ describe('create log file', () => {
     }), 50)
   })
 
+  it('creates a file given a date', function (done) {
+    var date = '2018-02-14'
+
+    log.createLogFile(date, {
+      logDir: logDir,
+      noOpen: true
+    })
+
+    setTimeout(() => fs.stat(path.join(__dirname, `temp/${date}.md`), (err, res) => {
+      done(err)
+    }), 50)
+  })
+
+  // TODO Fix. This should fail and be OK.
+  // it('creates no file given an invalid date', function (done) {
+  //   var date = '2018-02-14s'
+  //
+  //   log.createLogFile(date, {
+  //     logDir: logDir,
+  //     noOpen: true,
+  //     date: date
+  //   })
+  //
+  //   return setTimeout(() => {
+  //     return pify(fs)
+  //       .readFile(fs.stat(path.join(__dirname, `temp/${date}.md`)))
+  //       .catch((err) => {
+  //         if (err) {
+  //           assert.ok(true)
+  //           done()
+  //         }
+  //       })
+  //   }, 50)
+  // })
+
   it('creates the right file', function (done) {
     var fileName = 'test'
     var falseFile = 'err'

@@ -16,7 +16,8 @@ const cli = meow(`
     -p, --path Specify where the log folder exists
     -r, --routines Add a custom routines file
     -y, --yesterday Open yesterday's file
-    --date Open a specific date in the past
+    -c, --create Create a log file with a given date
+    --date Open a specific date in the past (format: YYYY-MM-DD)
     --divider Send a customer divider for parsing additional task files
       Default: '-----' on a new line
     --tasksfile Add a custom taskfile to check to
@@ -83,6 +84,9 @@ const cli = meow(`
     },
     'date': {
       type: 'string'
+    },
+    'create': {
+      type: 'boolean'
     }
   }
 })
@@ -110,6 +114,13 @@ if (cli.flags.init) {
     opts.logDir = path.resolve((cli.flags.path) ? cli.flags.path : process.cwd(), `${opts.projectName}/log`)
   }
   log.initProject(opts)
+} else if (cli.flags.create) {
+  if (cli.flags.date) {
+    log.createLogFile(moment(cli.flags.date).format('YYYY-MM-DD'), opts)
+  } else {
+    console.log('Date not provided.')
+    process.exit(0)
+  }
 } else if (cli.flags.yesterday || cli.flags.date) {
   log.openYesterday(opts).then(res => {
     if (!res) {

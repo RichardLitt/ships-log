@@ -105,6 +105,9 @@ function checkIfInLogFile (opts) {
 
 function createLogFile (date, opts) {
   opts = checkIfInLogFile(opts)
+  if (opts.date && !moment(date, 'YYYY-MM-DD', true).isValid()) {
+    throw new Error('Date is invalid')
+  }
   const file = `${opts.logDir}/${date}.md`
   return mkdirp(opts.logDir).then((res) => {
     return fileExists(file)
