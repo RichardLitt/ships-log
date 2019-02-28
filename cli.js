@@ -86,7 +86,8 @@ const cli = meow(`
       type: 'string'
     },
     'create': {
-      type: 'boolean'
+      type: 'boolean',
+      alias: 'c'
     }
   }
 })
