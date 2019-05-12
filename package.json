@@ -34,7 +34,7 @@
     -73.5789478
   ],
   "devDependencies": {
-    "assert": "^1.4.1",
+    "assert": "^2.0.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.12.0",
     "eslint-plugin-node": "^8.0.0",
