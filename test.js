@@ -7,8 +7,7 @@ const path = require('path')
 const pify = require('pify')
 const moment = require('moment')
 const write = require('write')
-
-// Use https://www.npmjs.com/package/tmp to clean up and remove file.
+const rimraf = require('rimraf')
 
 // getTasksFile,
 // getLastTasks,
@@ -26,7 +25,7 @@ function unlinkFile (dir, file) {
 }
 
 function removeTempDir () {
-  fs.rmdir(logDir, (err) => {
+  rimraf(logDir, (err) => {
     if (err && err.message.indexOf('ENOENT: no such file or directory') !== 0) {
       console.log(err.message)
       console.log(`Unable to delete test directory ${logDir}`)
@@ -54,6 +53,8 @@ describe('create log file', () => {
   })
 
   it('creates a file given a date', function (done) {
+    after(() => { unlinkFile(logDir, '2018-02-14') })
+
     var date = '2018-02-14'
 
     log.createLogFile(date, {
