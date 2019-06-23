@@ -24,7 +24,7 @@ function generateTemplate (heading, tasks, opts) {
   tasks = (typeof tasks === 'string') ? tasks : ''
 
   if (!opts.routines && !opts.tasksFile) {
-    return templates.daily(heading, routines, tasks, opts.nextSection)
+    return templates.daily(heading, tasks, routines, opts.nextSection)
   }
 
   // Get the routines if they exist
@@ -51,7 +51,7 @@ function generateTemplate (heading, tasks, opts) {
     })
     .then(() => {
       // Mung it all together
-      return templates.daily(heading, routines, tasks, opts.nextSection)
+      return templates.daily(heading, tasks, routines, opts.nextSection)
     })
 }
 

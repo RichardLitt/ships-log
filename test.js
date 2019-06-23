@@ -157,7 +157,7 @@ describe('create log file', () => {
       })
   })
 
-  it('with tasks file', function (done) {
+  it('with task and routine files', function (done) {
     var filename = 'test'
 
     Promise.resolve(path.join(__dirname, `fixtures/tasks.md`))
