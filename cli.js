@@ -12,7 +12,7 @@ const cli = meow(`
   Options
     --help Display helptext
     -i, --init Initialize a project folder (with optional name)
-    -m, --tomorrow Make tomorrow's list
+    -t, --tomorrow Make tomorrow's list
     -p, --path Specify where the log folder exists
     -r, --routines Add a custom routines file
     -y, --yesterday Open yesterday's file

@@ -68,7 +68,7 @@ ship --path=~/Desktop
 
 - `-h, --help` Display helptext
 - `-i, --init` Initialize a project folder (with optional name)
-- `-m, --tomorrow` Make tomorrow's file
+- `-t, --tomorrow` Make tomorrow's file
 - `-p, --path` Specify where the log file should exist
 - `-r, --routines <filename>` Add in a routine file
 - `-y, --yesterday` Open yesterday's file
@@ -82,7 +82,7 @@ ship --path=~/Desktop
 ```sh
 alias today='ship -p '$BASEDIR'log --tasksfile '$BASEDIR'todo.md -r '$BASEDIR'daily_routines.md'
 alias t=today
-alias tomorrow='ship -m -p '$BASEDIR'log --tasksfile '$BASEDIR'todo.md -r '$BASEDIR'daily_routines.md'
+alias tomorrow='ship -t -p '$BASEDIR'log --tasksfile '$BASEDIR'todo.md -r '$BASEDIR'daily_routines.md'
 alias yesterday='ship -y -p '$BASEDIR'log'
 alias y=yesterday
 alias todo=$IDE' '$BASEDIR'todo.md'

@@ -261,6 +261,25 @@ describe('opens yesterday', () => {
   })
 })
 
+// openTomorrow
+describe('opens tomorrow', () => {
+  const tomorrowDate = moment().add(1, 'days').format('YYYY-MM-DD')
+
+  afterEach(() => {
+    unlinkFile(logDir, tomorrowDate)
+  })
+
+  it('will create the file', function (done) {
+    log.createLogFile(tomorrowDate, {
+      logDir: logDir,
+      noOpen: true
+    })
+    setTimeout(() => fs.stat(path.join(logDir, tomorrowDate + '.md'), (err, res) => {
+      (err) ? done(err) : done()
+    }), 50)
+  })
+})
+
 describe('check if in a log dir', () => {
   it('will do nothing if not in a log dir', (done) => {
     let opts = log.checkIfInLogFile({ logDir: '/test/log' })
