@@ -2,6 +2,8 @@
 
 ## Mission
 
+## To Do
+
 ## Routines
 
 - [ ] Morning routine
@@ -9,7 +11,5 @@
   - [ ] Cold shower
   - [ ] Meditate
   - [ ] Morning flow writing
-
-## To Do
 
 ## Roundup

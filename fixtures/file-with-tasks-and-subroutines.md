@@ -2,7 +2,7 @@
 
 ## Mission
 
-## Routines
+## To Do
 
 - [ ] Morning routine
   - [ ] Make your bed
@@ -10,7 +10,7 @@
   - [ ] Meditate
   - [ ] Morning flow writing
 
-## To Do
+## Routines
 
 - [ ] Morning routine
   - [ ] Make your bed

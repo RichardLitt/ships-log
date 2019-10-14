@@ -1,6 +1,6 @@
 {
   "name": "ships-log",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "description": "Open up a log file for today in a project folder",
   "main": "index.js",
   "scripts": {
@@ -23,8 +23,8 @@
     "meow": "^5.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.22.1",
-    "open": "0.0.5",
-    "opn": "^5.1.0",
+    "open": "6.3.0",
+    "opn": "^6.0.0",
     "p-try": "^2.0.0",
     "pify": "^4.0.0",
     "write": "^1.0.3"
@@ -34,14 +34,15 @@
     -73.5789478
   ],
   "devDependencies": {
-    "assert": "^1.4.1",
+    "assert": "^2.0.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-react": "^7.3.0",
     "eslint-plugin-standard": "^4.0.0",
-    "mocha": "^5.2.0",
+    "mocha": "^6.1.4",
+    "rimraf": "^2.6.3",
     "semantic-release": "^15.10.7",
     "standard": "^12.0.1"
   },

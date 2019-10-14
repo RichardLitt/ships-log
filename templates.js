@@ -10,13 +10,13 @@ function readme (name) {
 ## Tracking Location`
 }
 
-function daily (heading, routines, tasks, next) {
+function daily (heading, tasks, routines, next) {
   return `# ${heading}
 
 ## Mission
-${routines}
+
 ## To Do
-${tasks}
+${tasks}${routines}
 ## Roundup
 ${(next) ? next + '\n' : ''}`
 }
