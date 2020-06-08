@@ -4,4 +4,6 @@
 
 ## To Do
 
+## Daily Journal
+
 ## Roundup

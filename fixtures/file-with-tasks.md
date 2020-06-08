@@ -10,4 +10,6 @@
   - [ ] Meditate
   - [ ] Morning flow writing
 
+## Daily Journal
+
 ## Roundup

@@ -17,6 +17,8 @@ function daily (heading, tasks, routines, next) {
 
 ## To Do
 ${tasks}${routines}
+## Daily Journal
+
 ## Roundup
 ${(next) ? next + '\n' : ''}`
 }
